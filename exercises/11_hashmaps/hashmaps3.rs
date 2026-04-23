@@ -15,6 +15,17 @@ struct TeamScores {
     goals_conceded: u8,
 }
 
+fn update_team_score<'team>(
+    scores: &mut HashMap<&'team str, TeamScores>,
+    team_name: &'team str,
+    goals_scored: u8,
+    goals_conceded: u8,
+) {
+    let team = scores.entry(team_name).or_default();
+    team.goals_scored += goals_scored;
+    team.goals_conceded += goals_conceded;
+}
+
 fn build_scores_table(results: &str) -> HashMap<&str, TeamScores> {
     // The name of the team is the key and its associated struct is the value.
     let mut scores = HashMap::<&str, TeamScores>::new();
@@ -31,6 +42,9 @@ fn build_scores_table(results: &str) -> HashMap<&str, TeamScores> {
         // Keep in mind that goals scored by team 1 will be the number of goals
         // conceded by team 2. Similarly, goals scored by team 2 will be the
         // number of goals conceded by team 1.
+
+        update_team_score(&mut scores, team_1_name, team_1_score, team_2_score);
+        update_team_score(&mut scores, team_2_name, team_2_score, team_1_score);
     }
 
     scores
